@@ -5,8 +5,8 @@ class PredictionType(models.Model):
     predictionTypeId = models.AutoField(db_column='prediction_type_id',primary_key=True,unique=True)
     predictionType = models.CharField(db_column='prediction_type', max_length = 80)
 
-    # class Meta:
-    #     db_table = 'prediction_type'
+    class Meta:
+         db_table = 'prediction_type'
 
     def __str__(self):
         return str(self.predictionTypeId) +' - '+ self.predictionType
@@ -15,8 +15,8 @@ class StatExportType(models.Model):
     statExportTypeId = models.AutoField(db_column='stat_export_type_id',primary_key=True,unique=True)
     statExportType = models.CharField(db_column='stat_export_type', max_length = 80)
 
-    # class Meta:
-    #     db_table = 'stat_export_type'
+    class Meta:
+        db_table = 'stat_export_type'
 
     def __str__(self):
         return str(self.statExportTypeId) +' - '+ self.statExportType
@@ -25,8 +25,8 @@ class Country(models.Model):
     countryId = models.AutoField(db_column='country_id',primary_key=True,unique=True)
     country = models.CharField(max_length=80)
 
-    # class Meta:
-    #     db_table = 'country'
+    class Meta:
+        db_table = 'country'
 
     def __str__(self):
         return str(self.countryId) +' - '+ self.country
@@ -38,16 +38,16 @@ class UserType(models.Model):
     def __str__(self):
         return str(self.userTypeId) +' - '+ self.userType
 
-    # class Meta:
-    #     db_table = 'user_type'
+    class Meta:
+        db_table = 'user_type'
 
 class University(models.Model):
     universityId = models.AutoField(db_column='university_id',primary_key=True,unique=True)
     university = models.CharField(max_length=80)
     countryId = models.ForeignKey(Country, default=138, on_delete=models.SET_NULL, null=True,db_column='country_id')
 
-    # class Meta:
-    #     db_table = 'university'
+    class Meta:
+        db_table = 'university'
 
     def __str__(self):
         return str(self.universityId) +' - '+ self.university
@@ -58,8 +58,8 @@ class User(models.Model):
     email = models.CharField(max_length=255, unique=True, default='')
     password = models.CharField(max_length=255)
 
-    # class Meta:
-    #     db_table = 'user'
+    class Meta:
+        db_table = 'user'
         
     def __str__(self):
         return str(self.userId) +' - '+ self.email
@@ -71,8 +71,8 @@ class StatExport(models.Model):
     userId = models.ForeignKey(User,null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
     exportDate = models.TimeField(auto_now_add=True, db_column = 'export_date')
 
-    # class Meta:
-    #     db_table = 'stat_export'
+    class Meta:
+        db_table = 'stat_export'
 
     def __str__(self):
         return str(self.statExportId) +' - '+ str(self.statExportTypeId) + ' ' + str(self.exportDate)
@@ -87,8 +87,8 @@ class UserInfo(models.Model):
     creationDate = models.TimeField(auto_now_add = True, db_column= 'creation_date')
     updatedDate = models.TimeField(auto_now_add=True, db_column='updated_date')
 
-    # class Meta:
-    #     db_table = 'user_info'
+    class Meta:
+        db_table = 'user_info'
 
     def __str__(self):
         return str(self.userInfoId) +' - '+ self.firstName +' '+ self.lastName
@@ -99,8 +99,8 @@ class LoginAttempt(models.Model):
     loginAttemptDate = models.TimeField(auto_now_add = True, db_column = 'login_attempt_date')
     isSuccesfull = models.BooleanField(db_column= 'is_successful', default=False)
 
-    # class Meta:
-    #     db_table = 'login_attempt'
+    class Meta:
+        db_table = 'login_attempt'
 
     def __str__(self):
         return str(self.loginId) +' - '+ self.userId +' '+ str(self.isSuccesfull)
@@ -117,8 +117,8 @@ class Prediction(models.Model):
     creationDate = models.TimeField(auto_now_add = True, db_column= 'creation_date')
     massivePredictionId = models.IntegerField(null=True, blank=True, db_column = 'massive_prediction_id', default=None)
 
-    # class Meta:
-    #     db_table = 'prediction'
+    class Meta:
+        db_table = 'prediction'
 
     def __str__(self):
         return str(self.predictionId) +' - '+str(self.userId) +' '+ str(self.creationDate)
@@ -137,8 +137,8 @@ class PredictionTraining(models.Model):
     GradYear = models.IntegerField (db_column='grad_year')
     Salary = models.IntegerField(db_column='salary', default = 0)
 
-    # class Meta:
-    #     db_table = 'prediction_training'
+    class Meta:
+        db_table = 'prediction_training'
 
     def __str__(self):
         return str(self.predictionTrainingId) +' - '+str(self.predictionTypeId)

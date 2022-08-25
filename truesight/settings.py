@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework_swagger',
     'rest_framework',
     'truesight',
     "django.contrib.admin",
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -75,13 +77,25 @@ WSGI_APPLICATION = "truesight.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'truesight',
+        'USER': 'admin',
+        'PASSWORD': '201720726',
+        'HOST': 'truesight.cyqaeigzohcy.us-east-2.rds.amazonaws.com',
+        'PORT': '',
+        'OPTIONS': {
+          'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

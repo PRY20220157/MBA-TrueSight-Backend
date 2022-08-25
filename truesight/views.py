@@ -4,6 +4,10 @@ from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django.urls import include, re_path
+from rest_framework_swagger.views import get_swagger_view
+
+
 
 
 #Countries
@@ -28,7 +32,7 @@ def countryDetail(request, countryId, format=None):
     try:
         country = Country.objects.get(countryId=countryId)
     except Country.DoesNotExist:
-        return Response(status=status.HTTP_404_NOTFound)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CountrySerializer(country)
