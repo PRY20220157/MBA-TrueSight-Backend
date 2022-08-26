@@ -31,7 +31,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework_swagger',
     'rest_framework',
     'truesight',
     "django.contrib.admin",
