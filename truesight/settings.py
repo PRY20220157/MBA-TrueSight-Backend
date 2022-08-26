@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-zg7@b$qpiv32p$p9a$)#)#*5wx_$d2e8_6oa%w+22_4qr-=_58
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework_swagger',
     'rest_framework',
+    'rest_framework.authtoken',
     'truesight',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'drf_yasg',
+    'authapp',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -96,6 +99,30 @@ DATABASES = {
         },
     }
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSIONS_CLASSES':(
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+DJOSER = {
+    'LOGIN_FIELD':'email',
+    'USER_CREATE_PASSWORD_RETYPE':True,
+    'SERIALIZERS':{
+        'user_create':'authapp.serializers.UserCreateSerializer',
+        'user':'authapp.serializers.UserCreateSerializer',
+    }
+}
+
+AUTH_USER_MODEL = 'authapp.User'
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
