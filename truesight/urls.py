@@ -14,8 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from truesight import views
+from .views import *
 from rest_framework import permissions
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf_yasg.views import get_schema_view
@@ -43,7 +44,12 @@ urlpatterns = [
     path("statexporttypes/", views.statExportTypeList),
     path("predictiontypes/", views.predictionTypeList),
     path("universities/", views.universityList),
+    #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
+    #server time
+    path('checkserver/',index,name='index'),
+    #auth djoser
+    path('auth/',include('authapp.urls'))
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns)
+#urlpatterns = format_suffix_patterns(urlpatterns)
