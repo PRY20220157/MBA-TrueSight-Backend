@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
+from MBATrueSight import *
 
 @api_view(['GET'])
 def index(request):
@@ -236,3 +237,44 @@ def universityDetail(request,universityId,format=None):
         university.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+@api_view(['GET','POST'])
+def predictionList(request, format=None):
+    if request.method == 'GET':
+        predictions = Prediction.objects.all()
+        serializer = PredictionSerializer(predictions, many=True)
+        return Response(serializer.data)
+    
+    if request.method=='POST':
+        serializer=PredictionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+    
+@api_view(['GET','PUT','DELETE'])
+def predictionDetail(request,predictionId,format=None):
+    
+    try:
+        prediction = Prediction.objects.get(predictionId=predictionId)
+    except prediction.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PredictionSerializer(prediction)
+        return Response(serializer.data)
+
+    elif request.method =='PUT':
+        serializer = PredictionSerializer(prediction,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        prediction.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def predictionTrain(request,predictionId,format=None):
+    run_training()
