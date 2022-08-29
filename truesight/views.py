@@ -5,6 +5,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
+from MBATrueSight import *
+import pandas as pd
+import numpy as np
 
 @api_view(['GET'])
 def index(request):
@@ -236,3 +239,128 @@ def universityDetail(request,universityId,format=None):
         university.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+@api_view(['GET','POST'])
+def predictionList(request, format=None):
+    if request.method == 'GET':
+        predictions = Prediction.objects.all()
+        serializer = PredictionSerializer(predictions, many=True)
+        return Response(serializer.data)
+    
+    if request.method=='POST':
+        serializer=PredictionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+    
+@api_view(['GET','PUT','DELETE'])
+def predictionDetail(request,predictionId,format=None):
+    
+    try:
+        prediction = Prediction.objects.get(predictionId=predictionId)
+    except prediction.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PredictionSerializer(prediction)
+        return Response(serializer.data)
+
+    elif request.method =='PUT':
+        serializer = PredictionSerializer(prediction,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        prediction.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def predictionTrain(request,format=None):
+    try: 
+        run_training()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        return Reponse(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def makePrediction(request,format=None):
+
+    predictions = []
+    for entry in request.data:
+        print("Entry:",entry)
+        result = RFpredict(entry)
+        predictions.append(result)
+
+    print(request.data)
+    print(result)
+
+    print(predictions)
+
+    response = Response()
+    response.data = {
+        'grad_gpa' : predictions[0][0]
+    }
+
+    return (response)
+
+
+@api_view(['POST'])
+def makeMassivePrediction(request,format=None):
+    
+    input_file = request.FILES['file']
+    try:
+        df = pd.read_csv(input_file)
+    except:
+         try:
+            df = pd.read_excel(input_file)
+         except:
+             response = Response(status=status.HTTP_400_BAD_REQUEST)
+             return response
+
+    df = df.reset_index()
+
+    finalPredictions = []
+    for index, row in df.iterrows():
+        predictionArray = []
+        singlePredictionDict ={}
+
+        try:
+            gmat = row['gmat'] 
+            gpa = row['gpa']
+            wk_xp = row['wk_xp']
+            app_type = row['app_type']
+        except:
+            continue
+        
+        predictionArray.extend((gmat,gpa,wk_xp,app_type))
+
+        # try:
+        #     for i in predictionArray:
+        #         if not(isinstance(i,float) or isinstance(i,int)):
+        #             print(i,float(i),"AAAAAAAAAAAAAAAAAA")
+        #             i = float(i)
+        #             input()
+        #         else:
+        #             continue
+        # except:
+        #     continue
+        
+        result = RFpredict(predictionArray)
+
+        singlePredictionDict = {
+            "gmat":gmat,
+            "gpa":gpa,
+            "wk_xp":wk_xp,
+            "app_type":app_type,
+            "grad_gpa":result[0]
+        }
+        finalPredictions.append(singlePredictionDict)
+
+    response = Response()
+    response.data=finalPredictions
+
+
+    return (response)

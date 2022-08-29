@@ -1,4 +1,5 @@
 from django.db import models
+from authapp.models import User as AUser
 
 class PredictionType(models.Model):
 
@@ -52,23 +53,23 @@ class University(models.Model):
     def __str__(self):
         return str(self.universityId) +' - '+ self.university
 
-class User(models.Model):
-    userId = models.AutoField(db_column='user_id',primary_key=True,unique=True)
-    userTypeId = models.ForeignKey(UserType, on_delete = models.SET_NULL, db_column = 'user_type_id', null=True)
-    email = models.CharField(max_length=255, unique=True, default='')
-    password = models.CharField(max_length=255)
+# class User(models.Model):
+#     userId = models.AutoField(db_column='user_id',primary_key=True,unique=True)
+#     userTypeId = models.ForeignKey(UserType, on_delete = models.SET_NULL, db_column = 'user_type_id', null=True)
+#     email = models.CharField(max_length=255, unique=True, default='')
+#     password = models.CharField(max_length=255)
 
-    class Meta:
-        db_table = 'user'
+#     class Meta:
+#         db_table = 'user'
         
-    def __str__(self):
-        return str(self.userId) +' - '+ self.email
+#     def __str__(self):
+#         return str(self.userId) +' - '+ self.email
 
 
 class StatExport(models.Model):
     statExportId = models.AutoField(db_column='stat_export_id',primary_key=True,unique=True)
     statExportTypeId = models.ForeignKey(StatExportType, db_column = 'stat_export_type_id', on_delete=models.SET_NULL, null=True)
-    userId = models.ForeignKey(User,null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
+    userId = models.ForeignKey(AUser,null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
     exportDate = models.TimeField(auto_now_add=True, db_column = 'export_date')
 
     class Meta:
@@ -79,7 +80,7 @@ class StatExport(models.Model):
 
 class UserInfo(models.Model):
     userInfoId = models.AutoField(db_column='user_info_id',primary_key=True,unique=True)
-    userId = models.ForeignKey(User, null=False, blank=False, on_delete=models.CASCADE, db_column='user_id')
+    userId = models.ForeignKey(AUser, null=False, blank=False, on_delete=models.CASCADE, db_column='user_id')
     countryId = models.ForeignKey(Country, on_delete=models.SET_NULL, db_column ='country_id',null=True)
     universityId = models.ForeignKey(University, on_delete = models.SET_NULL, db_column = 'university_id',null=True)
     firstName = models.CharField(max_length = 255, db_column = 'first_name')
@@ -95,7 +96,7 @@ class UserInfo(models.Model):
 
 class LoginAttempt(models.Model):
     loginId = models.AutoField(db_column='login_id',primary_key=True,unique=True)
-    userId = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, db_column='user_id')
+    userId = models.ForeignKey(AUser, null=True, on_delete=models.SET_NULL, db_column='user_id')
     loginAttemptDate = models.TimeField(auto_now_add = True, db_column = 'login_attempt_date')
     isSuccesfull = models.BooleanField(db_column= 'is_successful', default=False)
 
@@ -108,7 +109,7 @@ class LoginAttempt(models.Model):
 
 class Prediction(models.Model):
     predictionId = models.AutoField(db_column='prediction_id',primary_key=True,unique=True)
-    userId = models.ForeignKey(User, null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
+    userId = models.ForeignKey(AUser, null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
     predictionTypeId = models.ForeignKey(PredictionType, null=True, blank=True, on_delete=models.SET_NULL, db_column = 'prediction_type_id')
     gmatScore = models.IntegerField(db_column = 'gmat_score', default=0)
     gpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'gpa_score', default=0)
