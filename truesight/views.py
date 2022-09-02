@@ -328,26 +328,32 @@ def makeMassivePrediction(request,format=None):
         singlePredictionDict ={}
 
         try:
-            gmat = row['gmat'] 
-            gpa = row['gpa']
-            wk_xp = row['wk_xp']
-            app_type = row['app_type']
+            gmat = float(row['gmat'])
+            gpa = float(row['gpa'])
+            wk_xp = float(row['wk_xp'])
+            app_type = float(row['app_type'])
         except:
             continue
         
         predictionArray.extend((gmat,gpa,wk_xp,app_type))
 
-        # try:
-        #     for i in predictionArray:
-        #         if not(isinstance(i,float) or isinstance(i,int)):
-        #             print(i,float(i),"AAAAAAAAAAAAAAAAAA")
-        #             i = float(i)
-        #             input()
-        #         else:
-        #             continue
-        # except:
-        #     continue
+        try:
+            for i in predictionArray:
+                if not(isinstance(i,float) or isinstance(i,int)):                    
+                        print(i)
+                        print(isinstance(i,float))
+                        print(type(i))
+                        i = float(i)
+                else:
+                    continue
+        except:
+            continue
         
+
+        for i in predictionArray:
+            print(i)
+            print(type(i))
+
         result = RFpredict(predictionArray)
 
         singlePredictionDict = {
