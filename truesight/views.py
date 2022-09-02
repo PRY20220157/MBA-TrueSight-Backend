@@ -337,23 +337,6 @@ def makeMassivePrediction(request,format=None):
         
         predictionArray.extend((gmat,gpa,wk_xp,app_type))
 
-        try:
-            for i in predictionArray:
-                if not(isinstance(i,float) or isinstance(i,int)):                    
-                        print(i)
-                        print(isinstance(i,float))
-                        print(type(i))
-                        i = float(i)
-                else:
-                    continue
-        except:
-            continue
-        
-
-        for i in predictionArray:
-            print(i)
-            print(type(i))
-
         result = RFpredict(predictionArray)
 
         singlePredictionDict = {
