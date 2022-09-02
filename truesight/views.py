@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 from MBATrueSight import *
+import pandas as pd
+import numpy as np
 
 @api_view(['GET'])
 def index(request):
@@ -275,6 +277,79 @@ def predictionDetail(request,predictionId,format=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET'])
+def predictionTrain(request,format=None):
+    try: 
+        run_training()
+        return Response(status=status.HTTP_200_OK)
+    except:
+        return Reponse(status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['POST'])
-def predictionTrain(request,predictionId,format=None):
-    run_training()
+def makePrediction(request,format=None):
+
+    predictions = []
+    for entry in request.data:
+        print("Entry:",entry)
+        result = RFpredict(entry)
+        predictions.append(result)
+
+    print(request.data)
+    print(result)
+
+    print(predictions)
+
+    response = Response()
+    response.data = {
+        'grad_gpa' : predictions[0][0]
+    }
+
+    return (response)
+
+
+@api_view(['POST'])
+def makeMassivePrediction(request,format=None):
+    
+    input_file = request.FILES['file']
+    try:
+        df = pd.read_csv(input_file)
+    except:
+         try:
+            df = pd.read_excel(input_file)
+         except:
+             response = Response(status=status.HTTP_400_BAD_REQUEST)
+             return response
+
+    df = df.reset_index()
+
+    finalPredictions = []
+    for index, row in df.iterrows():
+        predictionArray = []
+        singlePredictionDict ={}
+
+        try:
+            gmat = float(row['gmat'])
+            gpa = float(row['gpa'])
+            wk_xp = float(row['wk_xp'])
+            app_type = float(row['app_type'])
+        except:
+            continue
+        
+        predictionArray.extend((gmat,gpa,wk_xp,app_type))
+
+        result = RFpredict(predictionArray)
+
+        singlePredictionDict = {
+            "gmat":gmat,
+            "gpa":gpa,
+            "wk_xp":wk_xp,
+            "app_type":app_type,
+            "grad_gpa":result[0]
+        }
+        finalPredictions.append(singlePredictionDict)
+
+    response = Response()
+    response.data=finalPredictions
+
+
+    return (response)
