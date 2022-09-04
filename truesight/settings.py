@@ -56,9 +56,6 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
 ]
-CORS_ALLOWED_ORIGINS = [
-    '*',
-]
 
 ROOT_URLCONF = "truesight.urls"
 
