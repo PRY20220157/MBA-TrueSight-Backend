@@ -39,11 +39,16 @@ urlpatterns = [
     path('statexporttypes/<int:statExportTypeId>',views.statExportTypeDetail),
     path('predictiontypes/<int:predictionTypeId>',views.predictionTypeDetail),
     path('universities/<int:universityId>',views.universityDetail),
+    path('predictions/<int:predictionId>',views.predictionDetail),
     path("usertypes/", views.userTypeList),
     path("countries/", views.countryList),
     path("statexporttypes/", views.statExportTypeList),
     path("predictiontypes/", views.predictionTypeList),
     path("universities/", views.universityList),
+    path("predictions/", views.predictionList),
+    path("model/train/", views.predictionTrain),
+    path("model/singleprediction/", views.makePrediction),
+    path("model/massiveprediction/",views.makeMassivePrediction),
     #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time

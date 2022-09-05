@@ -30,3 +30,8 @@ class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
         fields = ['userInfoId','userId','countryId','universityId','firstName','lastName','creationDate','updatedDate']
+
+class PredictionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prediction
+        fields = ['predictionId','userId','gmatScore','gpaScore','workExp','appType','gradGpaScore','creationDate','massivePredictionId','predictionTypeId']
