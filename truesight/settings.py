@@ -40,8 +40,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'drf_yasg',
-    'authapp',
-    'djoser',
     'corsheaders',
 ]
 
@@ -92,10 +90,10 @@ WSGI_APPLICATION = "truesight.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'truesight',
+        'NAME': 'truesightv2',
         'USER': 'admin',
-        'PASSWORD': '201720726',
-        'HOST': 'truesight.cyqaeigzohcy.us-east-2.rds.amazonaws.com',
+        'PASSWORD': 'u20181b262',
+        'HOST': 'database-1.cyqaeigzohcy.us-east-2.rds.amazonaws.com',
         'PORT': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -123,7 +121,6 @@ DJOSER = {
     }
 }
 
-AUTH_USER_MODEL = 'authapp.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

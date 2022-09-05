@@ -46,6 +46,8 @@ urlpatterns = [
     path("predictiontypes/", views.predictionTypeList),
     path("universities/", views.universityList),
     path("predictions/", views.predictionList),
+    path("users/",views.userList),
+    path("userinfo/",views.userInfoList),
     path("model/train/", views.predictionTrain),
     path("model/singleprediction/", views.makePrediction),
     path("model/massiveprediction/",views.makeMassivePrediction),
@@ -53,8 +55,6 @@ urlpatterns = [
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time
     path('checkserver/',index,name='index'),
-    #auth djoser
-    path('auth/',include('authapp.urls'))
 ]
 
 #urlpatterns = format_suffix_patterns(urlpatterns)

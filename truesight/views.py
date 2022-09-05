@@ -202,44 +202,11 @@ def universityDetail(request,universityId,format=None):
         university.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#University
-@api_view(['GET','POST'])
-def universityList(request, format=None):
-    if request.method == 'GET':
-        universities = University.objects.all()
-        serializer = UniversitySerializer(universities, many=True)
-        return Response(serializer.data)
-    
-    if request.method=='POST':
-        serializer=UniversitySerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status = status.HTTP_201_CREATED)
-    
-@api_view(['GET','PUT','DELETE'])
-def universityDetail(request,universityId,format=None):
-    
-    try:
-        university = University.objects.get(universityId=universityId)
-    except university.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = UniversitySerializer(university)
-        return Response(serializer.data)
-
-    elif request.method =='PUT':
-        serializer = UniversitySerializer(university,data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        university.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+
+#Prediction
 @api_view(['GET','POST'])
 def predictionList(request, format=None):
     if request.method == 'GET':
@@ -276,7 +243,61 @@ def predictionDetail(request,predictionId,format=None):
         prediction.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+#User
+@api_view(['GET','POST'])
+def userList(request, format=None):
+    if request.method == 'GET':
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
+    if request.method=='POST':
+        serializer=UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+#Prediction  
+@api_view(['GET','PUT','DELETE'])
+def predictionDetail(request,predictionId,format=None):
+    
+    try:
+        prediction = Prediction.objects.get(predictionId=predictionId)
+    except prediction.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PredictionSerializer(prediction)
+        return Response(serializer.data)
+
+    elif request.method =='PUT':
+        serializer = PredictionSerializer(prediction,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        prediction.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+#UserInfo
+@api_view(['GET','POST'])
+def userInfoList(request, format=None):
+    if request.method == 'GET':
+        userInfos = UserInfo.objects.all()
+        serializer = UserInfoSerializer(userInfos, many=True)
+        return Response(serializer.data)
+
+    if request.method=='POST':
+        serializer=UserInfoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+#-------------------------------
+#Models
 @api_view(['GET'])
 def predictionTrain(request,format=None):
     try: 
@@ -284,6 +305,7 @@ def predictionTrain(request,format=None):
         return Response(status=status.HTTP_200_OK)
     except:
         return Reponse(status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def makePrediction(request,format=None):

@@ -24,7 +24,7 @@ class PredictionTypeSerializer(serializers.ModelSerializer):
 class UniversitySerializer(serializers.ModelSerializer):
     class Meta:
         model = University
-        fields = ['universityId','university','countryId']
+        fields = ['universityId','university','countryId','university_email']
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +35,8 @@ class PredictionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prediction
         fields = ['predictionId','userId','gmatScore','gpaScore','workExp','appType','gradGpaScore','creationDate','massivePredictionId','predictionTypeId']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['userId','userTypeId','email','password']
