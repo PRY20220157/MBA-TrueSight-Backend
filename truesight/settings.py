@@ -90,10 +90,10 @@ WSGI_APPLICATION = "truesight.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'truesightv2',
+        'NAME': 'truesightv3',
         'USER': 'admin',
         'PASSWORD': 'u20181b262',
-        'HOST': 'database-1.cyqaeigzohcy.us-east-2.rds.amazonaws.com',
+        'HOST': 'truesightv3.cyqaeigzohcy.us-east-2.rds.amazonaws.com',
         'PORT': '',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
