@@ -311,22 +311,44 @@ def predictionTrain(request,format=None):
 def makePrediction(request,format=None):
 
     predictions = []
+    
+
+    
     for entry in request.data:
+        try:
+            userId = entry.pop('userId')
+        except:
+            userId = None
         print("Entry:",entry)
         result = RFpredict(entry)
         predictions.append(result)
 
-    print(request.data)
-    print(result)
 
-    print(predictions)
 
-    response = Response()
-    response.data = {
-        'grad_gpa' : predictions[0][0]
-    }
+    try:
+        request.data[0]['userId']=userId
+    except:
+        print(type(request.data[0]))
 
-    return (response)
+    try:    
+        request.data[0]['predictionTypeId']=1 #simple
+    except:
+        print(type(request.data[0]))
+
+
+    try:
+        request.data[0]['gmatScore']=request.data[0].pop('gmat')
+        request.data[0]['gpaScore']=request.data[0].pop('gpa')
+        request.data[0]['workExp']=request.data[0].pop('wk_xp')
+        request.data[0]['appType']=request.data[0].pop('app_type')
+        request.data[0]['gradGpaScore']=predictions[0][0]
+    except:
+        return Reponse(status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = PredictionSerializer(data=request.data[0])
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
 
 
 @api_view(['POST'])

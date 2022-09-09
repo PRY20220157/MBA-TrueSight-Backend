@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from djoser.serializers import UserCreateSerializer
+from django.contrib.auth import get_user_model
 from .models import *
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -36,7 +38,9 @@ class PredictionSerializer(serializers.ModelSerializer):
         model = Prediction
         fields = ['predictionId','userId','gmatScore','gpaScore','workExp','appType','gradGpaScore','creationDate','massivePredictionId','predictionTypeId']
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
+User = get_user_model()
+
+class UserCreateSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
         model = User
         fields = ['userId','userTypeId','email','password']

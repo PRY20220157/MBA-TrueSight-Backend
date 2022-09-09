@@ -16,11 +16,8 @@ def run_training():
     y = pd.DataFrame(dataset.iloc[:,-1])
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
     regressor = RandomForestRegressor(n_estimators=20, random_state=0)
-    regressor.fit(X_train.values, y_train)
-
-    print(X_test)
-
-    y_pred = regressor.predict(X_test)
+    model = regressor.fit(X_train, y_train.values.ravel())
+    y_pred = model.predict(X_test)
 
     print('Mean Absolute Error:',metrics.mean_absolute_error(y_test,y_pred))
     print('Mean Squared Error:',metrics.mean_squared_error(y_test,y_pred))

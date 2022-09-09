@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 class PredictionType(models.Model):
 
@@ -53,11 +54,30 @@ class University(models.Model):
     def __str__(self):
         return str(self.universityId) +' - '+ self.university
 
-class User(models.Model):
+class UserAccountManager(BaseUserManager):
+    def create_user(self,email,userTypeId,password=None):
+        if not email:
+            raise ValueError("Users must have an email address")
+        
+        email = self.normalize_email(email)
+        
+        user = self.model(email=email,userTypeId=userTypeId)
+
+        user.set_password(password)
+        user.save()
+
+        return user
+
+class User(AbstractBaseUser, PermissionsMixin):
     userId = models.AutoField(db_column='user_id',primary_key=True,unique=True)
     userTypeId = models.ForeignKey(UserType, on_delete = models.SET_NULL, db_column = 'user_type_id', null=True)
-    email = models.CharField(max_length=255, unique=True, default='')
-    password = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True, default='')
+    is_active = models.BooleanField(default=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['userTypeId']
+
+    objects = UserAccountManager()
 
     class Meta:
         db_table = 'user'
@@ -113,7 +133,8 @@ class Prediction(models.Model):
     predictionTypeId = models.ForeignKey(PredictionType, null=True, blank=True, on_delete=models.SET_NULL, db_column = 'prediction_type_id')
     gmatScore = models.IntegerField(db_column = 'gmat_score', default=0)
     gpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'gpa_score', default=0)
-    work_exp = models.IntegerField(db_column = 'work_exp', default=0)
+    workExp = models.IntegerField(db_column = 'work_exp', default=0)
+    appType = models.IntegerField(db_column = 'app_type',default=0)
     gradGpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'grad_gpa_score', default=0)
     creationDate = models.TimeField(auto_now_add = True, db_column= 'creation_date')
     massivePredictionId = models.IntegerField(null=True, blank=True, db_column = 'massive_prediction_id', default=None)
