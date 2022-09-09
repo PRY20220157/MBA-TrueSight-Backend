@@ -312,8 +312,6 @@ def makePrediction(request,format=None):
 
     predictions = []
     
-
-    
     for entry in request.data:
         try:
             userId = entry.pop('userId')
@@ -322,8 +320,6 @@ def makePrediction(request,format=None):
         print("Entry:",entry)
         result = RFpredict(entry)
         predictions.append(result)
-
-
 
     try:
         request.data[0]['userId']=userId
@@ -390,10 +386,35 @@ def makeMassivePrediction(request,format=None):
             "app_type":app_type,
             "grad_gpa":result[0]
         }
+
         finalPredictions.append(singlePredictionDict)
 
     response = Response()
     response.data=finalPredictions
 
+    print(finalPredictions)
+
+    massivePredictionId = request.data['massive_prediction_id']
+    userId = request.data['user_id']
+    predictionTypeId = 2
+
+    count=0
+    for pred in finalPredictions:
+        count=count+1
+        print(count)
+        try:
+            pred['gmatScore']=pred.pop('gmat')
+            pred['gpaScore']=pred.pop('gpa')
+            pred['workExp']=pred.pop('wk_xp')
+            pred['appType']=pred.pop('app_type')
+            pred['gradGpaScore']=round(pred.pop('grad_gpa'),2)
+            pred['userId']=userId
+            pred['predictionTypeId']=predictionTypeId
+            pred['massivePredictionId']=massivePredictionId
+            serializer = PredictionSerializer(data=pred)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        except:
+            continue
 
     return (response)
