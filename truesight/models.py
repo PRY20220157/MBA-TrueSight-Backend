@@ -90,7 +90,7 @@ class StatExport(models.Model):
     statExportId = models.AutoField(db_column='stat_export_id',primary_key=True,unique=True)
     statExportTypeId = models.ForeignKey(StatExportType, db_column = 'stat_export_type_id', on_delete=models.SET_NULL, null=True)
     userId = models.ForeignKey(User,null=True, blank=False, on_delete=models.SET_NULL, db_column='user_id')
-    exportDate = models.TimeField(auto_now_add=True, db_column = 'export_date')
+    exportDate = models.DateTimeField(auto_now_add=True, db_column = 'export_date')
 
     class Meta:
         db_table = 'stat_export'
@@ -105,8 +105,8 @@ class UserInfo(models.Model):
     universityId = models.ForeignKey(University, on_delete = models.SET_NULL, db_column = 'university_id',null=True)
     firstName = models.CharField(max_length = 255, db_column = 'first_name')
     lastName = models.CharField(max_length = 255, db_column = 'last_name')
-    creationDate = models.TimeField(auto_now_add = True, db_column= 'creation_date')
-    updatedDate = models.TimeField(auto_now_add=True, db_column='updated_date')
+    creationDate = models.DateTimeField(auto_now_add = True, db_column= 'creation_date')
+    updatedDate = models.DateTimeField(auto_now_add=True, db_column='updated_date')
 
     class Meta:
         db_table = 'user_info'
@@ -117,7 +117,7 @@ class UserInfo(models.Model):
 class LoginAttempt(models.Model):
     loginId = models.AutoField(db_column='login_id',primary_key=True,unique=True)
     userId = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, db_column='user_id')
-    loginAttemptDate = models.TimeField(auto_now_add = True, db_column = 'login_attempt_date')
+    loginAttemptDate = models.DateTimeField(auto_now_add = True, db_column = 'login_attempt_date')
     isSuccesfull = models.BooleanField(db_column= 'is_successful', default=False)
 
     class Meta:
@@ -136,7 +136,7 @@ class Prediction(models.Model):
     workExp = models.IntegerField(db_column = 'work_exp', default=0)
     appType = models.IntegerField(db_column = 'app_type',default=0)
     gradGpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'grad_gpa_score', default=0)
-    creationDate = models.TimeField(auto_now_add = True, db_column= 'creation_date')
+    creationDate = models.DateTimeField(auto_now_add = True, db_column= 'creation_date')
     massivePredictionId = models.IntegerField(null=True, blank=True, db_column = 'massive_prediction_id', default=None)
 
     class Meta:

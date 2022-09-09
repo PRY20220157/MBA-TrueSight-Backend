@@ -418,3 +418,17 @@ def makeMassivePrediction(request,format=None):
             continue
 
     return (response)
+
+
+@api_view(['POST'])
+def predictionById(request, format=None):
+    if request.method == 'POST':
+        try:
+            userId = request.data['userId']
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        predictions = Prediction.objects.filter(userId=userId)
+
+        serializer = PredictionSerializer(predictions, many=True)
+        return Response(serializer.data)
