@@ -337,9 +337,9 @@ def makePrediction(request,format=None):
         request.data[0]['gpaScore']=request.data[0].pop('gpa')
         request.data[0]['workExp']=request.data[0].pop('wk_xp')
         request.data[0]['appType']=request.data[0].pop('app_type')
-        request.data[0]['gradGpaScore']=predictions[0][0]
+        request.data[0]['gradGpaScore']=round(predictions[0][0],2)
     except:
-        return Reponse(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     serializer = PredictionSerializer(data=request.data[0])
     serializer.is_valid(raise_exception=True)
