@@ -7,3 +7,8 @@ mysqlclient
 drf_yasg==1.21.3
 xlrd
 openpyxl
+django-rest-swagger
+djoser
+pandas
+joblib
+sklearn
