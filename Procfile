@@ -1,0 +1,1 @@
+web: gunicorn truesight.wsgi --log-file -
