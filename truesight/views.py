@@ -257,6 +257,53 @@ def userList(request, format=None):
             serializer.save()
             return Response(serializer.data, status = status.HTTP_201_CREATED)
 
+#User by email
+@api_view(['POST'])
+def getUserByEmail(request, format=None):
+    try:
+        email = request.data['email']
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    users = User.objects.filter(email=email)
+
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+#UserInfo by email
+@api_view(['POST'])
+def getUserByEmail(request, format=None):
+    try:
+        email = request.data['email']
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    users = User.objects.filter(email=email)
+    serializer = UserSerializer(users, many=True)
+    
+    finalResponse = []
+    userdict, userinfodict = {},{}
+    userdict['user']=serializer.data
+    
+    finalResponse.append(userdict)
+
+    for user in serializer.data:
+        try:
+            userId = user['userId']
+            userInfos = UserInfo.objects.filter(userId=userId)
+            uiSerializer = UserInfoSerializer(userInfos,many=True)
+            userinfodict['userInfo']=uiSerializer.data
+            finalResponse.append(userinfodict)
+
+        except:            
+            response = {"Response":"No userinfo exists with this email {email}"}
+            finalResponse.append(response)
+
+    return Response(finalResponse)
+
+
+
+
 #Prediction  
 @api_view(['GET','PUT','DELETE'])
 def predictionDetail(request,predictionId,format=None):
