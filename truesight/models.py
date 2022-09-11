@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.utils import timezone
 
 class PredictionType(models.Model):
 
@@ -113,6 +114,12 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return str(self.userInfoId) +' - '+ self.firstName +' '+ self.lastName
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            self.updatedDate = timezone.now()
+            return super().save(*args, **kwargs)
+    
 
 class LoginAttempt(models.Model):
     loginId = models.AutoField(db_column='login_id',primary_key=True,unique=True)

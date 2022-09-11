@@ -8,6 +8,7 @@ from datetime import datetime
 from MBATrueSight import *
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 @api_view(['GET'])
 def index(request):
@@ -301,8 +302,21 @@ def getUserByEmail(request, format=None):
 
     return Response(finalResponse)
 
+#User Info PUT
+@api_view(['PUT'])
+def editUserInfo(request, userId, format=None):
 
+    try:
+        userInfo = UserInfo.objects.get(userId=userId)
+    except userInfo.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
+    if request.method =='PUT':
+        serializer = UserInfoSerializer(userInfo,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #Prediction  
 @api_view(['GET','PUT','DELETE'])
@@ -342,6 +356,8 @@ def userInfoList(request, format=None):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+
 
 #-------------------------------
 #Models
@@ -468,7 +484,7 @@ def makeMassivePrediction(request,format=None):
 
 
 @api_view(['POST'])
-def predictionById(request, format=None):
+def predictionsByUserId(request, format=None):
     if request.method == 'POST':
         try:
             userId = request.data['userId']
@@ -479,3 +495,16 @@ def predictionById(request, format=None):
 
         serializer = PredictionSerializer(predictions, many=True)
         return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deletePredictionsByUserId(request,userId, format=None):
+    
+    try:
+        predictions = Prediction.objects.filter(userId=userId)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    print(predictions)
+    predictions.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
