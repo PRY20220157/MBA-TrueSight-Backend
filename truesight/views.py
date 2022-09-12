@@ -9,6 +9,8 @@ from MBATrueSight import *
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from django.db.models import Q
+import numbers
 
 @api_view(['GET'])
 def index(request):
@@ -457,7 +459,20 @@ def makeMassivePrediction(request,format=None):
 
     print(finalPredictions)
 
-    massivePredictionId = request.data['massive_prediction_id']
+    try:
+        massivePredictionId = request.data['massive_prediction_id']
+    except:
+        try:
+            massivePredictionId =  Prediction.objects.filter(~Q(massivePredictionId=None)).last().massivePredictionId
+            if isinstance(massivePredictionId,numbers.Number):
+                massivePredictionId = massivePredictionId + 1
+            else:
+                massivePredictionId = 1
+        except:
+            response = Response(status=status.HTTP_400_BAD_REQUEST)
+            return response
+
+
     userId = request.data['user_id']
     predictionTypeId = 2
 
@@ -505,6 +520,30 @@ def deletePredictionsByUserId(request,userId, format=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     print(predictions)
+    predictions.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def deletePredictionsByMassivePredictionId(request,massivePredictionId,format=None):
+    
+    try:
+        predictions = Prediction.objects.filter(massivePredictionId=massivePredictionId)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    predictions.delete()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['DELETE'])
+def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,userId,format=None):
+    
+    try:
+        predictions = Prediction.objects.filter(massivePredictionId=massivePredictionId, userId=userId)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
     predictions.delete()
 
     return Response(status=status.HTTP_204_NO_CONTENT)

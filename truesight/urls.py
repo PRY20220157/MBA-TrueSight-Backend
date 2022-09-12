@@ -57,6 +57,8 @@ urlpatterns = [
     path("usersbyemail/",views.getUserByEmail),
     path("edituserinfo/<int:userId>",views.editUserInfo),
     path("deleteallpredictions/<int:userId>",views.deletePredictionsByUserId),
+    path("deletemassivepredictions/<int:massivePredictionId>",views.deletePredictionsByMassivePredictionId),
+    path("deletemassivepredictionswuid/<int:massivePredictionId>/<int:userId>",views.deletePredictionsByMassivePredictionIdAndUserId),
     #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time
