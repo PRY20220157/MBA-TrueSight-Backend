@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
 from MBATrueSight import *
+import datetime as dt
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -473,7 +474,7 @@ def makeMassivePrediction(request,format=None):
             return response
 
 
-    userId = request.data['user_id']
+    userId = int(request.data['user_id'])
     predictionTypeId = 2
 
     count=0
@@ -547,3 +548,33 @@ def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,
     predictions.delete()
 
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def getPredictionsByDate(request, format=None):
+    try:
+        startDate = request.data['startDate']
+        endDate = request.data['endDate']
+    except:
+        startDate = '01/01/1995'
+        endDate = '12/31/2050'
+    try:
+        smonth, sday, syear = startDate.split("/",2)
+        emonth, eday, eyear = endDate.split("/",2)
+        smonth, sday, syear = int(smonth), int(sday), int(syear)
+        emonth, eday, eyear = int(emonth), int(eday), int(eyear)
+    except:
+        startDate = '01/01/1995'
+        endDate = '12/31/2050'
+        smonth, sday, syear = startDate.split("/",2)
+        emonth, eday, eyear = endDate.split("/",2)
+        smonth, sday, syear = int(smonth), int(sday), int(syear)
+        emonth, eday, eyear = int(emonth), int(eday), int(eyear)
+    
+    predictions = Prediction.objects.filter(creationDate__gte=dt.date(syear, smonth, sday),
+                                        creationDate__lte=dt.date(eyear, emonth, eday))
+
+    serializer = PredictionSerializer(predictions, many=True)
+    return Response(serializer.data)
+
+
+

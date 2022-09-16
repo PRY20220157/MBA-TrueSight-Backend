@@ -59,6 +59,7 @@ urlpatterns = [
     path("deleteallpredictions/<int:userId>",views.deletePredictionsByUserId),
     path("deletemassivepredictions/<int:massivePredictionId>",views.deletePredictionsByMassivePredictionId),
     path("deletemassivepredictionswuid/<int:massivePredictionId>/<int:userId>",views.deletePredictionsByMassivePredictionIdAndUserId),
+    path("getpredictionsbydate/",views.getPredictionsByDate),
     #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time
