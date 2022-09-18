@@ -180,7 +180,7 @@ DJOSER = {
         'user_delete':'djoser.serializers.UserDeleteSerializer',
     }
 }
-
-django_heroku.settings(locals())
-
 STATIC_URL = '/static/'
+
+django_heroku.settings(locals(), staticfiles=False)
+del DATABASES['default']['OPTIONS']['sslmode']
