@@ -554,7 +554,7 @@ def getPredictionsByDate(request, format=None):
     try:   
         userId = request.data['userId']
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     try:
         startDate = request.data['startDate']
         endDate = request.data['endDate']
