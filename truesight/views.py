@@ -551,6 +551,10 @@ def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,
 
 @api_view(['GET'])
 def getPredictionsByDate(request, format=None):
+    try:   
+        userId = request.data['userId']
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     try:
         startDate = request.data['startDate']
         endDate = request.data['endDate']
@@ -571,7 +575,8 @@ def getPredictionsByDate(request, format=None):
         emonth, eday, eyear = int(emonth), int(eday), int(eyear)
     
     predictions = Prediction.objects.filter(creationDate__gte=dt.date(syear, smonth, sday),
-                                        creationDate__lte=dt.date(eyear, emonth, eday))
+                                        creationDate__lte=dt.date(eyear, emonth, eday),
+                                        userId=userId)
 
     serializer = PredictionSerializer(predictions, many=True)
     return Response(serializer.data)
