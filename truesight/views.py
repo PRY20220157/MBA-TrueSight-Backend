@@ -549,7 +549,7 @@ def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getPredictionsByDate(request, format=None):
     try:   
         userId = request.data['userId']
