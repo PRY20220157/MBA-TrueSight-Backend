@@ -186,4 +186,4 @@ DOMAIN = 'www.truesight.site'
 SITE_NAME = 'Truesight UPC'
 
 django_heroku.settings(locals(), staticfiles=False)
-#del DATABASES['default']['OPTIONS']['sslmode']
+del DATABASES['default']['OPTIONS']['sslmode']
