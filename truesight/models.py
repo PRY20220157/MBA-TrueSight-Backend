@@ -152,14 +152,29 @@ class Prediction(models.Model):
     def __str__(self):
         return str(self.predictionId) +' - '+str(self.userId) +' '+ str(self.creationDate)
 
+class PredictionAverageValues(models.Model):
+    predictionAverageValuesId = models.AutoField(db_column='prediction_average_values_id',primary_key=True,unique=True)
+    gmatAvg = models.DecimalField(max_digits=5, decimal_places = 2, db_column='gmat_avg', default = 0)
+    gpaAvg = models.DecimalField(max_digits=3, decimal_places = 2, db_column='gpa_avg', default = 0)
+    gradGpaAvg = models.DecimalField(max_digits=3, decimal_places = 2, db_column='grad_gpa_avg', default = 0)
+    workExpAvg = models.DecimalField(max_digits=5, decimal_places = 2, db_column='work_exp_avg', default = 0)
+    appTypeAvg = models.IntegerField(db_column='app_type_avg', default=0)
+    creationDate = models.DateTimeField(auto_now_add = True, db_column= 'creation_date')
+    averageType = models.IntegerField(db_column='average_type', default=2)
 
+    class Meta:
+        db_table = 'prediction_average'
+
+    def __str__(self):
+        return str(self.predictionAverageValuesId) + ' - ' + str(self.creationDate)
 
 class PredictionTraining(models.Model):
     predictionTrainingId = models.AutoField(db_column='prediction_training_id',primary_key=True,unique=True)
     predictionTypeId = models.ForeignKey(PredictionType, null=True, blank=True, on_delete=models.SET_NULL, db_column = 'prediction_type_id')
     gmatScore = models.IntegerField(db_column = 'gmat_score', default=0)
     gpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'gpa_score', default=0)
-    work_exp = models.IntegerField(db_column = 'work_exp', default=0)
+    workExp = models.IntegerField(db_column = 'work_exp', default=0)
+    appType = models.IntegerField(db_column = 'app_type',default=0)
     gradGpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'grad_gpa_score', default=0)
     OaAtGrad = models.BooleanField(db_column = 'OA_at_grad', default=False)
     OaAt90 = models.BooleanField(db_column = 'OA_at_90', default=False)

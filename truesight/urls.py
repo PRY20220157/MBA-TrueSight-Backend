@@ -60,6 +60,10 @@ urlpatterns = [
     path("deletemassivepredictions/<int:massivePredictionId>",views.deletePredictionsByMassivePredictionId),
     path("deletemassivepredictionswuid/<int:massivePredictionId>/<int:userId>",views.deletePredictionsByMassivePredictionIdAndUserId),
     path("getpredictionsbydate/",views.getPredictionsByDate),
+    path("calculateaverage/",views.calculateAverage),
+    path("calculateaveragebase/",views.calculateAverageBase),
+    path("getaveragebase/",views.getAverageBase),
+    path("getaverage/",views.getAverage),
     #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time

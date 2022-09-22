@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+import csv
 from .models import *
 from .serializers import *
 from rest_framework.decorators import api_view
@@ -12,6 +13,7 @@ import numpy as np
 from datetime import datetime
 from django.db.models import Q
 import numbers
+from django.db.models import Avg
 
 @api_view(['GET'])
 def index(request):
@@ -551,16 +553,22 @@ def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,
 
 @api_view(['POST'])
 def getPredictionsByDate(request, format=None):
+
     try:   
         userId = request.data['userId']
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
     try:
         startDate = request.data['startDate']
-        endDate = request.data['endDate']
     except:
         startDate = '01/01/1995'
+    
+    try:
+        endDate = request.data['endDate']
+    except:
         endDate = '12/31/2050'
+
     try:
         smonth, sday, syear = startDate.split("/",2)
         emonth, eday, eyear = endDate.split("/",2)
@@ -581,5 +589,125 @@ def getPredictionsByDate(request, format=None):
     serializer = PredictionSerializer(predictions, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def calculateAverage(request, format=None):
+    if request.method == 'GET':
+        predictions = Prediction.objects.filter(gmatScore__gte=200, gpaScore__gte=2.0)
+        avgGpa = predictions.aggregate(Avg('gpaScore'))
+        avgGmat = predictions.aggregate(Avg('gmatScore'))
+        gradGpaAvg = predictions.aggregate(Avg('gradGpaScore'))
+        workExpAvg = predictions.aggregate(Avg('workExp'))
+        countOfType = Prediction.objects.raw('select 1 as prediction_id, app_type, count(app_type) as work_exp from prediction group by app_type order by count(app_type) desc')
+        averageType = 2
+        total = 0
+        occurrencesAppType = 0
+        for index, i in enumerate(countOfType):
+            if index == 0:
+                modeAppType = i.appType
+                occurrencesAppType = i.workExp
+            total += i.workExp
+        
+        percAppType = round(((occurrencesAppType*100.0)/total),2)
 
+        gpaAvg=round(avgGpa['gpaScore__avg'],2)
+        gmatAvg=round(avgGmat['gmatScore__avg'],2)
+        gradGpaAvg = round(gradGpaAvg['gradGpaScore__avg'],2)
+        workExpAvg = round(workExpAvg['workExp__avg'],2)
+        avgWorkExp = countOfType
+
+        predAvg = {'gmatAvg':gmatAvg, 'gpaAvg':gpaAvg, 'gradGpaAvg':gradGpaAvg, 'workExpAvg':workExpAvg, 
+        'appTypeAvg':modeAppType,'averageType':averageType}
+        print(predAvg)
+
+        serializer = PredictionAverageValuesSerializer(data=predAvg)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        serializer.data['occurrencesAppType'] = occurrencesAppType
+        serializer.data['occurrencesAppTypeTotal'] = total
+
+        return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def calculateAverageBase(request, format=None):
+    if request.method == 'GET':
+        predictions = PredictionTraining.objects.filter(gmatScore__gte=200, gpaScore__gte=2.0)
+        avgGpa = predictions.aggregate(Avg('gpaScore'))
+        avgGmat = predictions.aggregate(Avg('gmatScore'))
+        gradGpaAvg = predictions.aggregate(Avg('gradGpaScore'))
+        workExpAvg = predictions.aggregate(Avg('workExp'))
+        countOfType = PredictionTraining.objects.raw('select 1 as prediction_training_id, app_type, count(app_type) as work_exp from prediction_training group by app_type order by count(app_type) desc')
+        averageType = 1
+
+        gpaAvg=round(avgGpa['gpaScore__avg'],2)
+        gmatAvg=round(avgGmat['gmatScore__avg'],2)
+        gradGpaAvg = round(gradGpaAvg['gradGpaScore__avg'],2)
+        workExpAvg = round(workExpAvg['workExp__avg'],2)
+        avgWorkExp = countOfType
+
+        total = 0
+        occurrencesAppType = 0
+        for index, i in enumerate(countOfType):
+            if index == 0:
+                modeAppType = i.appType
+                occurrencesAppType = i.workExp
+            total += i.workExp
+        
+        percAppType = round(((occurrencesAppType*100.0)/total),2)
+
+        predAvg = {'gmatAvg':gmatAvg, 'gpaAvg':gpaAvg, 'gradGpaAvg':gradGpaAvg, 'workExpAvg':workExpAvg, 
+        'appTypeAvg':modeAppType,'averageType':averageType}
+        print(predAvg)
+
+        serializer = PredictionAverageValuesSerializer(data=predAvg)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        serializer.data['occurrencesAppType'] = occurrencesAppType
+        serializer.data['occurrencesAppTypeTotal'] = total
+
+        return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def getAverageBase(request, format=None):
+    obj = PredictionAverageValues.objects.filter(averageType=1).latest('creationDate')
+    serializer = PredictionAverageValuesSerializer(obj)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getAverage(request, format=None):
+    obj = PredictionAverageValues.objects.filter(averageType=2).latest('creationDate')
+    serializer = PredictionAverageValuesSerializer(obj)
+    return Response(serializer.data)
+
+
+#---------------DONT USE THESE-------------------------------------------------
+@api_view(['POST'])
+def insertPredictionsIntoDB(request, format=None):
+    with open('D:\Culqi\Airflow\MBA-TrueSight-Backend\DatabaseLoad.csv') as f:
+        reader = csv.reader(f)
+
+        predType = PredictionType.objects.get(predictionTypeId=3)
+
+        count = 0
+        for row in reader:
+            _, created = PredictionTraining.objects.get_or_create(
+                predictionTrainingId=row[0],
+                gmatScore=row[1],
+                gpaScore=row[2],
+                work_exp=row[3],
+                gradGpaScore=row[4],
+                OaAtGrad=row[5],
+                OaAt90=row[6],
+                GradYear=row[7],
+                Salary=row[8],
+                predictionTypeId=predType,
+                appType=row[10],
+                )
+            count +=1
+            print(count)
+
+    response = Response()
+    return (response)
 

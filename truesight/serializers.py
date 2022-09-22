@@ -49,3 +49,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['userId','userTypeId','email','is_active']
+
+class PredictionAverageValuesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PredictionAverageValues
+        fields = ['predictionAverageValuesId','gmatAvg','gpaAvg','gradGpaAvg','workExpAvg','appTypeAvg','averageType','creationDate']
