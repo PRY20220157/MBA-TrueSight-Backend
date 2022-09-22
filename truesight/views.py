@@ -317,7 +317,10 @@ def editUserInfo(request, userId, format=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method =='PUT':
+        request.data['updatedDate']=datetime.now()
         serializer = UserInfoSerializer(userInfo,data=request.data)
+        print(request.data)
+        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -357,8 +360,13 @@ def userInfoList(request, format=None):
         return Response(serializer.data)
 
     if request.method=='POST':
+        print(request.data)
+
         serializer=UserInfoSerializer(data=request.data)
-        if serializer.is_valid():
+
+        print(serializer)
+
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status = status.HTTP_201_CREATED)
 

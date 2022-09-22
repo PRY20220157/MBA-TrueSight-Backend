@@ -114,11 +114,6 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return str(self.userInfoId) +' - '+ self.firstName +' '+ self.lastName
-
-    def save(self, *args, **kwargs):
-        if self.pk:
-            self.updatedDate = timezone.now()
-            return super().save(*args, **kwargs)
     
 
 class LoginAttempt(models.Model):
