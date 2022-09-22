@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-f*&-i3#q)%-##j6&f)ky^-we@7t!om+6yvb_-=0)yd@7u)__5w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS=['https://www.truesight.site', 'http://localhost:3000']
+ALLOWED_HOSTS=['https://www.truesight.site', 'http://localhost:3000','*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
