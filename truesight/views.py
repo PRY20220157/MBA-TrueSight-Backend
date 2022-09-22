@@ -42,7 +42,7 @@ def countryDetail(request, countryId, format=None):
 
     try:
         country = Country.objects.get(countryId=countryId)
-    except Country.DoesNotExist:
+    except country.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -79,7 +79,7 @@ def userTypeDetail(request,userTypeId,format=None):
     
     try:
         userType = UserType.objects.get(userTypeId=userTypeId)
-    except UserType.DoesNotExist:
+    except userType.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -319,8 +319,6 @@ def editUserInfo(request, userId, format=None):
     if request.method =='PUT':
         request.data['updatedDate']=datetime.now()
         serializer = UserInfoSerializer(userInfo,data=request.data)
-        print(request.data)
-        print(serializer)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -360,11 +358,7 @@ def userInfoList(request, format=None):
         return Response(serializer.data)
 
     if request.method=='POST':
-        print(request.data)
-
         serializer=UserInfoSerializer(data=request.data)
-
-        print(serializer)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -393,7 +387,6 @@ def makePrediction(request,format=None):
             userId = entry.pop('userId')
         except:
             userId = None
-        print("Entry:",entry)
         result = RFpredict(entry)
         predictions.append(result)
 
@@ -625,7 +618,6 @@ def calculateAverage(request, format=None):
 
         predAvg = {'gmatAvg':gmatAvg, 'gpaAvg':gpaAvg, 'gradGpaAvg':gradGpaAvg, 'workExpAvg':workExpAvg, 
         'appTypeAvg':modeAppType,'averageType':averageType}
-        print(predAvg)
 
         serializer = PredictionAverageValuesSerializer(data=predAvg)
         serializer.is_valid(raise_exception=True)
@@ -665,7 +657,6 @@ def calculateAverageBase(request, format=None):
 
         predAvg = {'gmatAvg':gmatAvg, 'gpaAvg':gpaAvg, 'gradGpaAvg':gradGpaAvg, 'workExpAvg':workExpAvg, 
         'appTypeAvg':modeAppType,'averageType':averageType}
-        print(predAvg)
 
         serializer = PredictionAverageValuesSerializer(data=predAvg)
         serializer.is_valid(raise_exception=True)
@@ -688,6 +679,29 @@ def getAverage(request, format=None):
     obj = PredictionAverageValues.objects.filter(averageType=2).latest('creationDate')
     serializer = PredictionAverageValuesSerializer(obj)
     return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deleteUserAndUserInfoByUserId(request,userId, format=None):
+
+    noInfo = False
+    
+    try:
+        user = User.objects.get(userId=userId)
+    except user.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        userInfo = UserInfo.objects.get(userId=userId)
+    except userInfo.DoesNotExist:
+        noInfo = True
+
+    if request.method == 'DELETE':
+        if noInfo:
+            userInfo.delete()
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 #---------------DONT USE THESE-------------------------------------------------

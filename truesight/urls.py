@@ -64,6 +64,7 @@ urlpatterns = [
     path("calculateaveragebase/",views.calculateAverageBase),
     path("getaveragebase/",views.getAverageBase),
     path("getaverage/",views.getAverage),
+    path("deleteuserabyuserid/<int:userId>",views.deleteUserAndUserInfoByUserId),
     #swagger
     path('',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time
