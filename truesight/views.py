@@ -400,6 +400,10 @@ def makePrediction(request,format=None):
     except:
         print(type(request.data[0]))
 
+    try:
+        request.data[0]['studentId']=""
+    except:
+        pass
 
     try:
         request.data[0]['gmatScore']=request.data[0].pop('gmat')
@@ -416,6 +420,7 @@ def makePrediction(request,format=None):
     return Response(serializer.data)
 
 
+
 @api_view(['POST'])
 def makeMassivePrediction(request,format=None):
     
@@ -430,8 +435,11 @@ def makeMassivePrediction(request,format=None):
              return response
 
     df = df.reset_index()
+    headers = list(df.columns.values)
+    headers = [e for e in headers if e not in ('gmat','gpa','wk_xp','app_type','index','grad_gpa','student_id')]
 
     finalPredictions = []
+    responsePredictions = []
     for index, row in df.iterrows():
         predictionArray = []
         singlePredictionDict ={}
@@ -443,7 +451,12 @@ def makeMassivePrediction(request,format=None):
             app_type = float(row['app_type'])
         except:
             continue
-        
+
+        try:
+            student_id = str(row['student_id'])
+        except:
+            student_id = ""
+
         predictionArray.extend((gmat,gpa,wk_xp,app_type))
 
         result = RFpredict(predictionArray)
@@ -453,13 +466,21 @@ def makeMassivePrediction(request,format=None):
             "gpa":gpa,
             "wk_xp":wk_xp,
             "app_type":app_type,
-            "grad_gpa":result[0]
+            "grad_gpa":result[0],
+            "student_id":student_id
         }
+        print(singlePredictionDict)
+        responsePredictionDict = singlePredictionDict.copy()
 
         finalPredictions.append(singlePredictionDict)
-
+        
+        for head in headers:
+            responsePredictionDict[head] = row[head]
+        
+        responsePredictions.append(responsePredictionDict)
+        
     response = Response()
-    response.data=finalPredictions
+    response.data=responsePredictions
 
     print(finalPredictions)
 
@@ -491,6 +512,7 @@ def makeMassivePrediction(request,format=None):
             pred['appType']=pred.pop('app_type')
             pred['gradGpaScore']=round(pred.pop('grad_gpa'),2)
             pred['userId']=userId
+            pred['studentId']=pred.pop('student_id')
             pred['predictionTypeId']=predictionTypeId
             pred['massivePredictionId']=massivePredictionId
             serializer = PredictionSerializer(data=pred)
@@ -733,3 +755,50 @@ def insertPredictionsIntoDB(request, format=None):
     response = Response()
     return (response)
 
+@api_view(['POST'])
+def predictionTesting(request,format=None):
+     
+    input_file = request.FILES['file']
+    try:
+        df = pd.read_csv(input_file)
+    except:
+         try:
+            df = pd.read_excel(input_file)
+         except:
+             response = Response(status=status.HTTP_400_BAD_REQUEST)
+             return response
+
+    df = df.reset_index()
+    headers = list(df.columns.values)
+    headers = [e for e in headers if e not in ('gmat','gpa','wk_xp','app_type','index','grad_gpa')]
+    
+    finalPredictions = []
+    print(headers)
+    for index, row in df.iterrows():
+        predictionArray = []
+        singlePredictionDict ={}
+
+        print(type(row.values))
+        print(row.values)
+
+        try:
+            gmat = float(row['gmat'])
+            gpa = float(row['gpa'])
+            wk_xp = float(row['wk_xp'])
+            app_type = float(row['app_type'])
+        except:
+            continue
+
+        singlePredictionDict = {
+            "gmat":gmat,
+            "gpa":gpa,
+            "wk_xp":wk_xp,
+            "app_type":app_type,
+        }
+
+        for head in headers:
+            singlePredictionDict[head] = row[head]
+
+
+        print(singlePredictionDict)
+    return Response()

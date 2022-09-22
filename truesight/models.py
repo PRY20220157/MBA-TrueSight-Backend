@@ -140,6 +140,7 @@ class Prediction(models.Model):
     gradGpaScore = models.DecimalField(max_digits=3, decimal_places=2, db_column = 'grad_gpa_score', default=0)
     creationDate = models.DateTimeField(auto_now_add = True, db_column= 'creation_date')
     massivePredictionId = models.IntegerField(null=True, blank=True, db_column = 'massive_prediction_id', default=None)
+    studentId = models.CharField(max_length=255, db_column = 'student_id',default=None, blank=True, null=True)
 
     class Meta:
         db_table = 'prediction'
