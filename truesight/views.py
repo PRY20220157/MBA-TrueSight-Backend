@@ -722,11 +722,7 @@ def deleteUserAndUserInfoByUserId(request,userId, format=None):
         noInfo = True
 
     if request.method == 'DELETE':
-<<<<<<< Updated upstream
         if noInfo == False:
-=======
-        if noInfo==False:
->>>>>>> Stashed changes
             userInfo.delete()
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
