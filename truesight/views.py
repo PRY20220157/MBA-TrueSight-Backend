@@ -5,7 +5,7 @@ from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, timedelta
 from MBATrueSight import *
 import datetime as dt
 import pandas as pd
@@ -13,7 +13,7 @@ import numpy as np
 from datetime import datetime
 from django.db.models import Q
 import numbers
-from django.db.models import Avg
+from django.db.models import Avg, Count, Max
 
 @api_view(['GET'])
 def index(request):
@@ -714,16 +714,71 @@ def deleteUserAndUserInfoByUserId(request,userId, format=None):
 
     try:
         userInfo = UserInfo.objects.get(userId=userId)
-    except userInfo.DoesNotExist:
+    except:
+        userInfo = None
+        noInfo = True
+
+    if not userInfo:
         noInfo = True
 
     if request.method == 'DELETE':
+<<<<<<< Updated upstream
         if noInfo == False:
+=======
+        if noInfo==False:
+>>>>>>> Stashed changes
             userInfo.delete()
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def getStatisticsByUserId(request, userId, format=None):
+
+    try:
+        user = User.objects.get(userId=userId)
+    except user.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    userPredictions = Prediction.objects.filter(userId=userId)
+
+    if not userPredictions:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+    lastMonth = datetime.today()-timedelta(days=30)
+    predNum = userPredictions.count()
+    predNumThisMonth = userPredictions.filter(creationDate__gte=lastMonth).count()
+
+    avgGpa = userPredictions.aggregate(Avg('gpaScore'))
+    avgGmat = userPredictions.aggregate(Avg('gmatScore'))
+    gradGpaAvg = userPredictions.aggregate(Avg('gradGpaScore'))
+    workExpAvg = userPredictions.aggregate(Avg('workExp'))
+
+    maxGpaResult = userPredictions.order_by('-gradGpaScore').first()
+    maxGpaResultSerializer = PredictionSerializer(maxGpaResult)
+
+    maxGpaResultThisMonth = userPredictions.filter(creationDate__gte=lastMonth).order_by('-gradGpaScore').first()
+    maxGpaResultThisMonthSerializer = PredictionSerializer(maxGpaResultThisMonth)
+
+    finalResponseDict = {}
+    finalResponseDict['predNum'] = predNum
+    finalResponseDict['predNumThisMonth'] = predNumThisMonth
+    finalResponseDict['avgGpa']= round(avgGpa['gpaScore__avg'],2)
+    finalResponseDict['avgGmat']=round(avgGmat['gmatScore__avg'],2)
+
+    finalResponseDict['gradGpaAvg']=round(gradGpaAvg['gradGpaScore__avg'],2)
+    finalResponseDict['workExpAvg']=round(workExpAvg['workExp__avg'],2)
+
+    finalResponseDict['maxGpaResult']=maxGpaResultSerializer.data
+    finalResponseDict['maxGpaResultThisMonth']=maxGpaResultThisMonthSerializer.data
+
+    response = Response()
+    response.data = finalResponseDict
+
+    return response
+
 
 
 #---------------DONT USE THESE-------------------------------------------------
