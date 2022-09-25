@@ -540,7 +540,7 @@ def predictionsByUserId(request, format=None):
         try:
             userId = request.data['userId']
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_400_BAD_REQUEST)
 
         predictions = Prediction.objects.filter(userId=userId)
 
