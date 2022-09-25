@@ -382,6 +382,16 @@ def makePrediction(request,format=None):
 
     predictions = []
     
+    try:
+        request.data[0]['userId']
+        request.data[0]['gmat']
+        request.data[0]['gpa']
+        request.data[0]['wk_xp']
+        request.data[0]['app_type']
+    except:
+        return Response(data={"Error":"Datos ingresados incompletos"},status=status.HTTP_400_BAD_REQUEST)
+
+
     for entry in request.data:
         try:
             userId = entry.pop('userId')
@@ -580,7 +590,7 @@ def getPredictionsByDate(request, format=None):
     try:   
         userId = request.data['userId']
     except:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={"Error":"Datos ingresados incompletos"},status=status.HTTP_400_BAD_REQUEST)
 
     try:
         startDate = request.data['startDate']
