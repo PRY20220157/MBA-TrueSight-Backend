@@ -42,8 +42,8 @@ def countryDetail(request, countryId, format=None):
 
     try:
         country = Country.objects.get(countryId=countryId)
-    except country.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = CountrySerializer(country)
@@ -79,8 +79,8 @@ def userTypeDetail(request,userTypeId,format=None):
     
     try:
         userType = UserType.objects.get(userTypeId=userTypeId)
-    except userType.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = UserTypeSerializer(userType)
@@ -116,8 +116,8 @@ def statExportTypeDetail(request,statExportTypeId,format=None):
     
     try:
         statExportType = StatExportType.objects.get(statExportTypeId=statExportTypeId)
-    except statExportType.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = StatExportTypeSerializer(statExportType)
@@ -153,8 +153,8 @@ def predictionTypeDetail(request,predictionTypeId,format=None):
     
     try:
         predictionType = PredictionType.objects.get(predictionTypeId=predictionTypeId)
-    except predictionType.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = PredictionTypeSerializer(predictionType)
@@ -190,8 +190,8 @@ def universityDetail(request,universityId,format=None):
     
     try:
         university = University.objects.get(universityId=universityId)
-    except university.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = UniversitySerializer(university)
@@ -232,10 +232,7 @@ def predictionDetail(request,predictionId,format=None):
     try:
         prediction = Prediction.objects.get(predictionId=predictionId)
     except:
-        if not prediction:
-            return Response(data={"Message":"No se encontraron predicciones"},status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={"Message":"No se encontraron predicciones con ese id"},status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = PredictionSerializer(prediction)
@@ -250,7 +247,7 @@ def predictionDetail(request,predictionId,format=None):
 
     elif request.method == 'DELETE':
         prediction.delete()
-        return Response(data={"Message":"Prediccion borrada exitosamente."},status=status.HTTP_204_NO_CONTENT)
+        return Response(data={"Message":"Prediccion borrada exitosamente."},status=status.HTTP_200_NO_CONTENT)
 
 #User
 @api_view(['GET','POST'])
@@ -316,8 +313,8 @@ def editUserInfo(request, userId, format=None):
 
     try:
         userInfo = UserInfo.objects.get(userId=userId)
-    except userInfo.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method =='PUT':
         request.data['updatedDate']=datetime.now()
@@ -326,31 +323,6 @@ def editUserInfo(request, userId, format=None):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#Prediction  
-@api_view(['GET','PUT','DELETE'])
-def predictionDetail(request,predictionId,format=None):
-    
-    try:
-        prediction = Prediction.objects.get(predictionId=predictionId)
-    except prediction.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = PredictionSerializer(prediction)
-        return Response(serializer.data)
-
-    elif request.method =='PUT':
-        serializer = PredictionSerializer(prediction,data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        prediction.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 #UserInfo
 @api_view(['GET','POST'])
@@ -554,15 +526,15 @@ def predictionsByUserId(request, format=None):
 def deletePredictionsByUserId(request,userId, format=None):
     
     if userId == None:
-        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_400_BAD_REQUEST)
 
     try:
         predictions = Prediction.objects.filter(userId=userId)
     except:
-        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_400_BAD_REQUEST)
 
     if not predictions:
-        return Response(data={"Mensaje":"No se encontraron predicciones con este id"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Mensaje":"No se encontraron predicciones con este id"},status=status.HTTP_400_BAD_REQUEST)
 
     print(predictions)
     predictions.delete()
@@ -575,7 +547,7 @@ def deletePredictionsByMassivePredictionId(request,massivePredictionId,format=No
     try:
         predictions = Prediction.objects.filter(massivePredictionId=massivePredictionId)
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     predictions.delete()
 
@@ -587,7 +559,7 @@ def deletePredictionsByMassivePredictionIdAndUserId(request,massivePredictionId,
     try:
         predictions = Prediction.objects.filter(massivePredictionId=massivePredictionId, userId=userId)
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     predictions.delete()
 
@@ -728,8 +700,8 @@ def deleteUserAndUserInfoByUserId(request,userId, format=None):
     
     try:
         user = User.objects.get(userId=userId)
-    except user.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     try:
         userInfo = UserInfo.objects.get(userId=userId)
@@ -746,7 +718,7 @@ def deleteUserAndUserInfoByUserId(request,userId, format=None):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def getStatisticsByUserId(request, userId, format=None):
@@ -754,12 +726,12 @@ def getStatisticsByUserId(request, userId, format=None):
     try:
         user = User.objects.get(userId=userId)
     except:
-        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_400_BAD_REQUEST)
     
     userPredictions = Prediction.objects.filter(userId=userId)
 
     if not userPredictions:
-        return Response(data={"Error":"No se encontraron predicciones para el usuario"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"No se encontraron predicciones para el usuario"},status=status.HTTP_400_BAD_REQUEST)
 
 
     lastMonth = datetime.today()-timedelta(days=30)
