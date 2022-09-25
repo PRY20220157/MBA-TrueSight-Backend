@@ -744,13 +744,13 @@ def getStatisticsByUserId(request, userId, format=None):
 
     try:
         user = User.objects.get(userId=userId)
-    except user.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        return Response("Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
     
     userPredictions = Prediction.objects.filter(userId=userId)
 
     if not userPredictions:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response("Error":"No se encontraron predicciones para el usuario"},status=status.HTTP_404_NOT_FOUND)
 
 
     lastMonth = datetime.today()-timedelta(days=30)
