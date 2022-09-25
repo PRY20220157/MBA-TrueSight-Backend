@@ -231,8 +231,11 @@ def predictionDetail(request,predictionId,format=None):
     
     try:
         prediction = Prediction.objects.get(predictionId=predictionId)
-    except prediction.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    except:
+        if not prediction:
+            return Response(data={"Message":"No se encontraron predicciones"},status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     if request.method == 'GET':
         serializer = PredictionSerializer(prediction)
@@ -247,7 +250,7 @@ def predictionDetail(request,predictionId,format=None):
 
     elif request.method == 'DELETE':
         prediction.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data={"Message":"Prediccion borrada exitosamente."},status=status.HTTP_204_NO_CONTENT)
 
 #User
 @api_view(['GET','POST'])
