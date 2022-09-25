@@ -553,12 +553,12 @@ def deletePredictionsByUserId(request,userId, format=None):
     try:
         predictions = Prediction.objects.filter(userId=userId)
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
 
     print(predictions)
     predictions.delete()
 
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(data={"Mensaje":"Predicciones borradas satisfactoriamente"},status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['DELETE'])
 def deletePredictionsByMassivePredictionId(request,massivePredictionId,format=None):
@@ -745,7 +745,7 @@ def getStatisticsByUserId(request, userId, format=None):
     try:
         user = User.objects.get(userId=userId)
     except:
-        return Response("Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
     
     userPredictions = Prediction.objects.filter(userId=userId)
 
