@@ -550,15 +550,21 @@ def predictionsByUserId(request, format=None):
 @api_view(['DELETE'])
 def deletePredictionsByUserId(request,userId, format=None):
     
+    if userId == None:
+        return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
+
     try:
         predictions = Prediction.objects.filter(userId=userId)
     except:
         return Response(data={"Error":"Por favor, ingrese el id del usuario"},status=status.HTTP_404_NOT_FOUND)
 
+    if not predictions:
+        return Response(data={"Mensaje":"No se encontraron predicciones con este id"},status=status.HTTP_404_NOT_FOUND)
+
     print(predictions)
     predictions.delete()
 
-    return Response(data={"Mensaje":"Predicciones borradas satisfactoriamente"},status=status.HTTP_204_NO_CONTENT)
+    return Response(data={"Mensaje":"Predicciones borradas satisfactoriamente"},status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
 def deletePredictionsByMassivePredictionId(request,massivePredictionId,format=None):
