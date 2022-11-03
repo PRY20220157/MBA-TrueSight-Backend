@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-f*&-i3#q)%-##j6&f)ky^-we@7t!om+6yvb_-=0)yd@7u)__5w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS=['https://www.truesight.site', 'http://localhost:3000','*']
+ALLOWED_HOSTS=['https://www.truesight.site', 'http://localhost:3000']
 
 CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
@@ -48,7 +48,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -56,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
@@ -185,5 +185,5 @@ STATIC_URL = '/static/'
 DOMAIN = 'www.truesight.site'
 SITE_NAME = 'Truesight UPC'
 
-django_heroku.settings(locals(), staticfiles=False)
-del DATABASES['default']['OPTIONS']['sslmode']
+#django_heroku.settings(locals(), staticfiles=False)
+#del DATABASES['default']['OPTIONS']['sslmode']

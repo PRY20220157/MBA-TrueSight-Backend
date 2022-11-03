@@ -68,7 +68,7 @@ urlpatterns = [
     path("predictiontesting/",views.predictionTesting),
     path("getstatisticsbyuserid/<int:userId>",views.getStatisticsByUserId),
     #swagger
-    path('/swagger',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
+    path('swagger',schema_view.with_ui('swagger',cache_timeout=0),name="schema-swagger-ui"),
     #server time
     path('checkserver/',index,name='index'),
 ]

@@ -1,12 +1,19 @@
-# syntax=docker/dockerfile:1
-FROM python:3
 
-RUN apt-get update
+FROM ubuntu:18.04
 
-COPY requirements.txt requirements.txt
-RUN python -m pip install --upgrade pip
-RUN pip install -r requirements.txt
+COPY . /app
 
-COPY . .
+WORKDIR /app
 
-WORKDIR /
+RUN apt-get update \
+    && apt-get -y upgrade \
+    && apt-get install -y python3-pip build-essential manpages-dev libpq-dev default-libmysqlclient-dev
+
+RUN python3 -m pip install -U pip \
+    && pip3 install mysqlclient \
+    && pip3 install --upgrade setuptools \
+    && pip3 install -r /app/requirements.txt
+
+EXPOSE 8080
+
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "3", "--timeout", "120", "--max-requests", "600", "--log-file", "-", "truesight.wsgi:application"]
